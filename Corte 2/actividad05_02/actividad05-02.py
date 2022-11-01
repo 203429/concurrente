@@ -29,8 +29,6 @@ class Recepcionista():
             print("Recepcionista está atendiendo al cliente #" + str(cliente.id) + " con reservación.")
             time.sleep(2)
             self.asignar_mesa(cliente)
-            # restaurante.append(cliente)
-            # print("Cliente #" + str(cliente.id) + " ingresó al restaurante.")
             m_recepcionista.notify()
             m_recepcionista.release()
         else:
@@ -44,8 +42,6 @@ class Recepcionista():
             print("Recepcionista está atendiendo al cliente #" + str(cliente.id) + ".")
             time.sleep(1.5)
             self.asignar_mesa(cliente)
-            # restaurante.append(cliente)
-            # print("Cliente #" + str(cliente.id) + " ingresó al restaurante.")
             m_recepcionista.notify()
             m_recepcionista.release()
         else:
@@ -58,7 +54,7 @@ class Recepcionista():
             print("Cliente #" + str(cliente.id) + " ingresó al restaurante.")
             restaurante.put(cliente)
             print("Cliente #" + str(cliente.id) + " se ha sentado y está listo para ordenar.")
-            m_mesero.acquire()
+            m_mesero.acquire()  # mesero puede interactuar
             m_mesero.notify()
             m_mesero.release()
             m_restaurante.release()
@@ -132,8 +128,8 @@ class Mesero(threading.Thread):
                     print("Mesero #" + str(self.id) + " agregó la orden del cliente #" + str(cliente.id) + " a la cola")
                     cliente.orden_tomada = True    # Bloquear
                     ordenes.put(cliente.id)
-                    m_cocinero.acquire()
-                    m_cocinero.notify()
+                    m_cocinero.acquire()    
+                    m_cocinero.notify()     #cocinero puede interactuar
                     m_cocinero.release()
                     m_mesero.notify()
                     m_mesero.release()
@@ -177,20 +173,17 @@ if __name__ == '__main__':
     clientes = []
     for _ in range(CLIENTES):
         clientes.append(Cliente())
-
     for cm in clientes:
         cm.start()
 
     meseros = []
     for _ in range(CANTIDAD_MESEROS):
         meseros.append(Mesero())
-    
     for me in meseros:
         me.start()
 
     cocineros = []
     for _ in range(CANTIDAD_COCINEROS):
         cocineros.append(Cocinero())
-
     for co in cocineros:
         co.start()
