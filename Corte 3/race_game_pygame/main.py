@@ -1,5 +1,6 @@
 import pygame, time, math, sys
-from utils import scale_image, blit_rotate_center
+from utils import scale_image, blit_rotate_center, blit_text_center
+pygame.font.init()
 
 GRASS = scale_image(pygame.image.load("imgs/grass.png"), 6)
 TRACK = scale_image(pygame.image.load("imgs/track.png"), 1.6)
@@ -11,14 +12,49 @@ FINISH_MASK = pygame.mask.from_surface(FINISH)
 FINISH_POS = (960,570)
 
 CAR1 = scale_image(pygame.image.load("imgs/car1.png"), 0.8)
+CAR1_POS = (1015, 480)
 CAR2 = scale_image(pygame.image.load("imgs/car2.png"), 0.8)
+CAR2_POS = (980, 480)
+CAR3 = scale_image(pygame.image.load("imgs/car3.png"), 0.8)
+CAR3_POS = (980, 390)
 
 WIDTH, HEIGHT = GRASS.get_width(), GRASS.get_height()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Formula UP")
 
+MAIN_FONT = pygame.font.SysFont("comicsans", 44)
+
 FPS = 60
-PATH = [(1035, 311), (913, 224), (662, 270), (496, 166), (325, 249), (97, 238), (57, 332), (363, 365), (623, 397), (681, 521), (150, 543), (115, 698), (464, 699), (753, 701)]
+PATH1 = [(1006, 334), (670, 266), (486, 150), (115, 252), (289, 419), (615, 374), (436, 563), (101, 525), (298, 718), (787, 687), (970, 681), (1031, 593)]
+
+class GameInfo:
+    LEVELS = 10
+    
+    def __init__(self, level=1):
+        self.level = level
+        self.started = False
+        self.level_start_time = 0
+
+    def next_level(self):
+        self.level += 1
+        self.started = False
+    
+    def reset(self):
+        self.level = 1
+        self.started = False
+        self.level_start_time = 0
+
+    def game_finished(self):
+        return self.level > self.LEVELS
+
+    def start_level(self):
+        self.started = True
+        self.level_start_time = time.time()
+
+    def get_level(self):
+        if not self.started:
+            return 0
+        return self.level_start_time - time.time()
 
 class AbstractCar:
     def __init__(self, max_vel, rotation_vel):
@@ -68,7 +104,7 @@ class AbstractCar:
 
 class PlayerCar(AbstractCar):
     IMG = CAR1
-    START_POS = (1015, 480)
+    START_POS = CAR1_POS
 
     def reduce_speed(self):
         self.vel = max(self.vel - self.acceleration / 2, 0)
@@ -80,7 +116,7 @@ class PlayerCar(AbstractCar):
 
 class ComputerCar(AbstractCar):
     IMG = CAR2
-    START_POS = (980, 480)
+    START_POS = CAR2_POS
 
     def __init__(self, max_vel, rotation_vel, path=[]):
         super().__init__(max_vel, rotation_vel)
@@ -94,7 +130,7 @@ class ComputerCar(AbstractCar):
 
     def draw(self, win):
         super().draw(win)
-        self.draw_points(win)
+        # self.draw_points(win)
 
     def calculate_angle(self):
         target_x, target_y = self.path[self.current_point]
@@ -111,7 +147,7 @@ class ComputerCar(AbstractCar):
 
         difference_in_angle = self.angle - math.degrees(desired_radian_angle)
         if difference_in_angle >= 180:
-            difference_in_angle -= 270
+            difference_in_angle -= 360
 
         if difference_in_angle > 0:
             self.angle -= min(self.rotation_vel, abs(difference_in_angle))
@@ -165,7 +201,6 @@ def handle_collision(player_car, computer_car):
 
     computer_finish_poi_collide = computer_car.collide(FINISH_MASK, *FINISH_POS)
     if computer_finish_poi_collide != None:
-        print("computer wins")
         player_car.reset()
         computer_car.reset()
 
@@ -180,22 +215,34 @@ def handle_collision(player_car, computer_car):
 clock = pygame.time.Clock()
 images = [(GRASS, (0,0)),(TRACK, (-30,120)),(FINISH, FINISH_POS)]
 player_car = PlayerCar(5,4)
-computer_car = ComputerCar(4,4,PATH)
+computer_car = ComputerCar(5,4,PATH1)
+game_info = GameInfo()
 
 while True:
     clock.tick(FPS)
 
     draw(WIN, images, player_car, computer_car)
+
+    while not game_info.started:
+        blit_text_center(WIN, MAIN_FONT, f"Press any key to start level {game_info.level}!")
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if event.type == pygame.KEYDOWN:
+                game_info.start_level()
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            print(computer_car.path)
+            # print(computer_car.path)
             pygame.quit()
             sys.exit()
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
-            computer_car.path.append(pos)
+        # if event.type == pygame.MOUSEBUTTONDOWN:
+        #     pos = pygame.mouse.get_pos()
+        #     computer_car.path.append(pos)
 
     move_player(player_car)
     computer_car.move()
