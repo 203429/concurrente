@@ -63,8 +63,6 @@ class AbstractCar:
         self.vel = 0
         self.rotation_vel = rotation_vel
         self.angle = 0
-        # self.img = self.IMG
-        # self.x, self.y = self.START_POS
         self.img = img
         self.x, self.y = start_pos
         self.acceleration = 0.3
@@ -168,8 +166,14 @@ class ComputerCar(AbstractCar):
 
     def next_level(self, level, start_pos):
         self.reset(start_pos)
-        self.vel = self.max_vel + (level - 1) * 0.2
+        self.vel = self.max_vel + (level - 1) * 2
         self.current_point = 0
+        if level==2:
+            type_path = random.randint(0,3)
+            self.path = paths.PATHS_LV2[type_path]
+        if level==3:
+            type_path = random.randint(0,3)
+            self.path = paths.PATHS_LV3[type_path]
 
 def draw(win, images, player_car, computer_car, game_info):
     for img,pos in images:
@@ -239,7 +243,6 @@ def main(clock, images, player_car, computer_car, game_info):
             pygame.display.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    # print(computer_car.path)
                     pygame.quit()
                     sys.exit()
 
@@ -248,7 +251,6 @@ def main(clock, images, player_car, computer_car, game_info):
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                # print(computer_car.path)
                 pygame.quit()
                 sys.exit()
 
@@ -265,17 +267,16 @@ def main(clock, images, player_car, computer_car, game_info):
             blit_text_center(WIN, MAIN_FONT, "You won the game!")
             pygame.display.update()
             pygame.time.wait(5000)
-            game_info.reset()
-            player_car.reset(CAR1_POS)
-            computer_car.reset(CAR2_POS)
+            pygame.quit()
+            sys.exit()
 
 if __name__ == '__main__':
     clock = pygame.time.Clock()
     images = [(GRASS, (0,0)),(TRACK, (-30,120)),(FINISH, FINISH_POS)]
 
-    player_car = PlayerCar(CAR1, CAR1_POS, 5,4)
+    player_car = PlayerCar(CAR1, CAR1_POS, 6,4)
 
-    type_path = random.randint(0,4)
+    type_path = random.randint(0,3)
     computer_car = ComputerCar(CAR2, CAR2_POS, 2, 4, paths.PATHS_LV1[type_path])
     # computer_car2 = ComputerCar(CAR3, CAR3_POS, 2, 4, PATH1)
     game_info = GameInfo()
