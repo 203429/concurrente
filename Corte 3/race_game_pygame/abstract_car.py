@@ -1,8 +1,9 @@
-import pygame, math
+import pygame, math, threading
 from utils import blit_rotate_center
 
-class AbstractCar:
+class AbstractCar(threading.Thread):
     def __init__(self, img, start_pos, max_vel, rotation_vel):
+        threading.Thread.__init__(self)
         self.max_vel = max_vel
         self.vel = 0
         self.rotation_vel = rotation_vel
@@ -29,6 +30,8 @@ class AbstractCar:
         self.move()
 
     def move(self):
+        if self.vel == 0:
+            self.vel = self.max_vel
         radians = math.radians(self.angle)
         vertical = math.cos(radians) * self.vel
         horizontal = math.sin(radians) * self.vel

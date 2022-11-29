@@ -1,13 +1,17 @@
-import pygame, math, paths, random
+import pygame, math, paths, random, sys
 from abstract_car import AbstractCar
+from settings import FINISH_MASK, FINISH_POS
+from utils import blit_text_center
 
 class ComputerCar(AbstractCar):
-    def __init__(self, img, start_pos, max_vel, rotation_vel, path=[]):
+    def __init__(self, gi, img, start_pos, max_vel, rotation_vel, path=[]):
         super().__init__(img, start_pos, max_vel, rotation_vel)
         self.path = path
         self.current_point = 0
         self.vel = max_vel
         self.img = img
+        self.game_info = gi
+        self.start_pos = start_pos
 
     def draw_points(self, win):
         for point in self.path:
@@ -49,10 +53,13 @@ class ComputerCar(AbstractCar):
     def move(self):
         if self.current_point >= len(self.path):
             return
-
         self.calculate_angle()
         self.update_path_point()
         super().move()
+
+    def reset(self, start_pos):
+        self.current_point = 0
+        super().reset(start_pos)
 
     def next_level(self, level, start_pos):
         self.reset(start_pos)
@@ -64,3 +71,16 @@ class ComputerCar(AbstractCar):
         if level==3:
             type_path = random.randint(0,3)
             self.path = paths.PATHS_LV3[type_path]
+
+    def run(self):
+        clock = pygame.time.Clock()
+        while True:
+            clock.tick(60)
+            computer_finish_poi_collide = self.collide(FINISH_MASK, *FINISH_POS)
+            if computer_finish_poi_collide != None:
+                self.game_info.computer_wins(self, self.start_pos)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
