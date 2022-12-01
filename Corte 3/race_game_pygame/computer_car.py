@@ -66,10 +66,10 @@ class ComputerCar(AbstractCar):
         self.vel = self.max_vel + (level - 1) * 2
         self.current_point = 0
         if level==2:
-            type_path = random.randint(0,3)
+            type_path = random.randint(0,5)
             self.path = paths.PATHS_LV2[type_path]
         if level==3:
-            type_path = random.randint(0,3)
+            type_path = random.randint(0,1)
             self.path = paths.PATHS_LV3[type_path]
 
     def run(self):

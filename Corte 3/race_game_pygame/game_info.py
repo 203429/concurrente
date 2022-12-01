@@ -14,15 +14,15 @@ class GameInfo:
 
         self.player_car = PlayerCar(CAR1, CAR1_POS, 6,4)
 
-        type_path = random.randint(0,3)
+        type_path = random.randint(0,5)
         self.computer_car = ComputerCar(self, CAR2, CAR2_POS, 2, 4, paths.PATHS_LV1[type_path])
         self.computer_car.start()
 
-        type_path = random.randint(0,3)
+        type_path = random.randint(0,5)
         self.computer_car2 = ComputerCar(self, CAR3, CAR3_POS, 2, 4, paths.PATHS_LV1[type_path])
         self.computer_car2.start()
 
-        type_path = random.randint(0,3)
+        type_path = random.randint(0,5)
         self.computer_car3 = ComputerCar(self, CAR4, CAR4_POS, 2, 4, paths.PATHS_LV1[type_path])
         self.computer_car3.start()
 
