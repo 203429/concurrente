@@ -2,10 +2,16 @@ import pygame, sys
 from settings import *
 from game_info import GameInfo
 from utils import blit_text_center
+from pygame import mixer
+
+mixer.init()
+mixer.music.load('background.wav')
 
 class Game:
     def __init__(self):
         pygame.init()
+        mixer.music.play(-1)
+        mixer.music.set_volume(0.1)
         self.win = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Formula UP")
         pygame.display.set_icon(ICON)
