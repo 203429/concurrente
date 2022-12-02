@@ -52,10 +52,10 @@ class GameInfo:
         WIN.blit(level_text, (5, 5))
 
         time_text = INFO_FONT.render(f"Time: {self.get_level_time()}s", 1, (122, 17, 17))
-        WIN.blit(time_text, (5, 40))
+        WIN.blit(time_text, (930, 5))
 
-        vel_text = INFO_FONT.render(f"Vel: {round(self.player_car.vel)}px/s", 1, (122, 17, 17))
-        WIN.blit(vel_text, (5, 75))
+        # vel_text = INFO_FONT.render(f"Vel: {round(self.player_car.vel)}px/s", 1, (122, 17, 17))
+        # WIN.blit(vel_text, (5, 75))
 
         self.player_car.draw(WIN)
         self.computer_car.draw(WIN)
@@ -101,7 +101,7 @@ class GameInfo:
         if computer_finish_poi_collide != None:
             blit_text_center(WIN, MAIN_FONT, "You lost!")
             pygame.display.update()
-            pygame.time.wait(5000)
+            pygame.time.wait(2500)
             self.reset()
             self.player_car.reset(CAR1_POS)
             computer_car.reset(start_pos)
