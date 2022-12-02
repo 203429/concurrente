@@ -5,7 +5,7 @@ from utils import blit_text_center
 from pygame import mixer
 
 mixer.init()
-mixer.music.load('background.wav')
+mixer.music.load('backgrounds.wav')
 
 class Game:
     def __init__(self):
